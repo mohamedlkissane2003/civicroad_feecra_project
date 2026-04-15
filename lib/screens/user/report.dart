@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import '../app_colors.dart';
+import '../../app_colors.dart';
 
 /// CivicRoad — Report Screen
 /// Lets the user upload a photo, pick a problem category, confirm GPS location,
@@ -147,7 +147,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
             color: AppColors.card,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.4),
+              color: AppColors.primary.withValues(alpha: 0.4),
               width: 2,
               style: BorderStyle.none, // dashed not supported natively; use a package for real dashes
             ),
@@ -158,7 +158,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.15),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(32),
                 ),
                 child: const Icon(Icons.camera_alt_outlined, size: 32, color: AppColors.primary),
@@ -235,7 +235,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: selected ? AppColors.primary.withOpacity(0.08) : AppColors.card,
+                color: selected ? AppColors.primary.withValues(alpha: 0.08) : AppColors.card,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: selected ? AppColors.primary : AppColors.border,
@@ -249,7 +249,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: selected ? AppColors.primary : AppColors.primary.withOpacity(0.15),
+                      color: selected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
@@ -303,7 +303,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.15),
+                color: AppColors.primary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(Icons.location_on_outlined, size: 18, color: AppColors.primary),
@@ -384,7 +384,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: isSelected ? severityColor.withOpacity(0.14) : AppColors.card,
+                    color: isSelected ? severityColor.withValues(alpha: 0.14) : AppColors.card,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected ? severityColor : AppColors.border,
@@ -421,7 +421,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.25),
+                  color: AppColors.primary.withValues(alpha: 0.25),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),

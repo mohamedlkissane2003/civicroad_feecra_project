@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../app_colors.dart';
+import '../../app_colors.dart';
 
 /// CivicRoad — Profile Screen
 /// Shows user avatar, reputation score, stats, achievement badges,
@@ -91,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
                     colors: [AppColors.primaryLight, AppColors.primaryDark],
                   ),
                   borderRadius: BorderRadius.circular(35),
-                  border: Border.all(color: Colors.white.withOpacity(0.4), width: 3),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 3),
                 ),
                 alignment: Alignment.center,
                 child: const Text(
@@ -126,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '@johndoe · Member since 2025',
-                  style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.75)),
+                  style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.75)),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -141,12 +141,12 @@ class ProfileScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         'Rank #42',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white.withOpacity(0.9)),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.9)),
                       ),
                     ),
                   ],
@@ -158,7 +158,7 @@ class ProfileScreen extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
@@ -178,7 +178,7 @@ class ProfileScreen extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -198,7 +198,7 @@ class ProfileScreen extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
+                    color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(stat['icon'] as IconData, size: 20, color: color),
@@ -302,7 +302,7 @@ class ProfileScreen extends StatelessWidget {
                             width: 38,
                             height: 38,
                             decoration: BoxDecoration(
-                              color: earned ? AppColors.primary.withOpacity(0.12) : AppColors.border,
+                              color: earned ? AppColors.primary.withValues(alpha: 0.12) : AppColors.border,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -368,7 +368,7 @@ class ProfileScreen extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.12),
+                          color: AppColors.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(item['icon'] as IconData, size: 17, color: AppColors.primary),

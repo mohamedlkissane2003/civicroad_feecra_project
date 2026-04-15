@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../app_colors.dart';
+import '../../app_colors.dart';
 
 /// CivicRoad — My Reports Screen
 /// Displays the user's submitted reports with filter tabs and status badges.
@@ -218,13 +218,13 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           // Image placeholder
           Container(
             width: 82,
-            color: accentColor.withOpacity(0.12),
+            color: accentColor.withValues(alpha: 0.12),
             child: Center(
               child: Container(
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.25),
+                  color: accentColor.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(Icons.image_outlined, size: 20, color: accentColor),
@@ -249,7 +249,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.12),
+                          color: statusColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
