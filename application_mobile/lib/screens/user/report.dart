@@ -201,7 +201,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
 
     setState(() => _submitting = true);
     try {
-      await CivicRoadApi.submitReport(
+      final created = await CivicRoadApi.submitReport(
         title: title,
         description: description,
         category: _selectedCategory!,

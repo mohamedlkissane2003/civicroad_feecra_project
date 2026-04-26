@@ -96,14 +96,16 @@ class CivicRoadLocalState {
         : snapshots.values.isNotEmpty
             ? snapshots.values.first
             : null;
+    final latestTitle = latestTracked?['title']?.toString() ?? 'No recent activity';
+    final latestLocation = latestTracked?['location_text']?.toString() ?? '';
 
     return {
       'submitted': trackedReports.length,
       'pending': trackedReports.where((report) => _normalizeStatus(report['status']?.toString() ?? 'pending') == 'pending').length,
-      'inProgress': trackedReports.where((report) => _normalizeStatus(report['status']?.toString() ?? 'pending') == 'in_progress').length,
+      'inProgress': trackedReports.where((report) => _normalizeStatus(report['status']?.toString() ?? 'pending') == 'in progress').length,
       'resolved': trackedReports.where((report) => _normalizeStatus(report['status']?.toString() ?? 'pending') == 'resolved').length,
-      'latestTitle': latestTracked is Map ? latestTracked['title']?.toString() ?? 'No recent activity' : 'No recent activity',
-      'latestLocation': latestTracked is Map ? latestTracked['location_text']?.toString() ?? '' : '',
+      'latestTitle': latestTitle,
+      'latestLocation': latestLocation,
       'email': prefs.getString(_userEmailKey),
       'trackedReports': trackedReports,
     };
