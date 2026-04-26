@@ -43,9 +43,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       final reports = await CivicRoadApi.fetchPublicReports();
       final notifications = await CivicRoadLocalState.buildNotifications(reports);
+      await CivicRoadLocalState.markNotificationsRead();
       if (!mounted) return;
       setState(() {
-        _notifications = notifications;
+        _notifications = notifications
+            .map((item) => {
+                  ...item,
+                  'read': true,
+                })
+            .toList();
         _error = null;
       });
     } catch (error) {

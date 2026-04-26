@@ -7,6 +7,7 @@ class CivicRoadLocalState {
 
   static const String _trackedReportIdsKey = 'civicroad_tracked_report_ids';
   static const String _reportSnapshotsKey = 'civicroad_tracked_report_snapshots';
+  static const String _notificationHistoryKey = 'civicroad_notification_history';
   static const String _userEmailKey = 'civicroad_user_email';
 
   static Future<void> rememberSubmittedReport(Map<String, dynamic> report) async {
@@ -48,7 +49,7 @@ class CivicRoadLocalState {
     final prefs = await SharedPreferences.getInstance();
     final trackedIds = prefs.getStringList(_trackedReportIdsKey) ?? <String>[];
     final snapshots = await _readSnapshots(prefs);
-    final notifications = <Map<String, dynamic>>[];
+    final notificationHistory = await _readNotificationHistory(prefs);
 
     for (final report in reports) {
       final reportId = report['id']?.toString();
@@ -60,14 +61,20 @@ class CivicRoadLocalState {
       final previousStatus = _normalizeStatus(snapshots[reportId]?['status']?.toString() ?? 'pending');
 
       if (status != previousStatus && status != 'pending') {
-        notifications.add({
-          'id': reportId,
-          'title': report['title']?.toString() ?? 'Your report',
-          'message': _statusMessage(status),
-          'status': status,
-          'location_text': report['location_text']?.toString() ?? '',
-          'updated_at': report['created_at']?.toString() ?? '',
-        });
+        final eventId = '${reportId}_$status';
+        final alreadyExists = notificationHistory.any((item) => item['event_id']?.toString() == eventId);
+        if (!alreadyExists) {
+          notificationHistory.add({
+            'event_id': eventId,
+            'id': reportId,
+            'title': report['title']?.toString() ?? 'Your report',
+            'message': _statusMessage(status),
+            'status': status,
+            'location_text': report['location_text']?.toString() ?? '',
+            'updated_at': DateTime.now().toIso8601String(),
+            'read': false,
+          });
+        }
       }
 
       snapshots[reportId] = {
@@ -81,8 +88,34 @@ class CivicRoadLocalState {
     }
 
     await prefs.setString(_reportSnapshotsKey, jsonEncode(snapshots));
-    notifications.sort((a, b) => (b['updated_at'] as String).compareTo(a['updated_at'] as String));
-    return notifications;
+    notificationHistory.sort((a, b) => (b['updated_at']?.toString() ?? '').compareTo(a['updated_at']?.toString() ?? ''));
+    await prefs.setString(_notificationHistoryKey, jsonEncode(notificationHistory));
+    return notificationHistory;
+  }
+
+  static Future<void> markNotificationsRead() async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = await _readNotificationHistory(prefs);
+    for (final item in history) {
+      item['read'] = true;
+    }
+    await prefs.setString(_notificationHistoryKey, jsonEncode(history));
+  }
+
+  static Future<int> unreadNotificationCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = await _readNotificationHistory(prefs);
+    return history.where((item) => item['read'] != true).length;
+  }
+
+  static Future<Map<String, int>> notificationSummary() async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = await _readNotificationHistory(prefs);
+    final unread = history.where((item) => item['read'] != true).length;
+    return {
+      'total': history.length,
+      'unread': unread,
+    };
   }
 
   static Future<Map<String, dynamic>> buildProfileSummary(List<Map<String, dynamic>> reports) async {
@@ -128,6 +161,20 @@ class CivicRoadLocalState {
       }
       return MapEntry(key.toString(), <String, dynamic>{});
     });
+  }
+
+  static Future<List<Map<String, dynamic>>> _readNotificationHistory(SharedPreferences prefs) async {
+    final raw = prefs.getString(_notificationHistoryKey);
+    if (raw == null || raw.isEmpty) {
+      return <Map<String, dynamic>>[];
+    }
+
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) {
+      return <Map<String, dynamic>>[];
+    }
+
+    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
   static String _normalizeStatus(String status) {
