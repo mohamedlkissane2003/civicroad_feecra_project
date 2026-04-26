@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_colors.dart';
+import '../../services/civicroad_local_state.dart';
 import 'main_shell.dart';
 import 'signup.dart';
 
@@ -28,6 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState?.validate() != true) {
       return;
     }
+
+    CivicRoadLocalState.rememberUserEmail(_emailController.text.trim());
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainShell()),

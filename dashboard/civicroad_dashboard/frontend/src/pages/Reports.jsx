@@ -63,26 +63,35 @@ export default function Reports() {
       </div>
 
       <div className="card p-4 flex flex-wrap gap-3">
-        <input
-          placeholder="Search…"
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-primary flex-1 min-w-[200px]"
-        />
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-          className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-        >
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <select
-          value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-        >
-          {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
-        </select>
+        <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Search</span>
+          <input
+            placeholder="Search…"
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-primary"
+          />
+        </div>
+        <div className="flex flex-col gap-1 min-w-[180px]">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Category filter</span>
+          <select
+            value={filters.category}
+            onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+          >
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1 min-w-[180px]">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status filter</span>
+          <select
+            value={filters.status}
+            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+          >
+            {STATUSES.map((s) => <option key={s} value={s}>{s === "all" ? "All statuses" : s.replace("_", " ")}</option>)}
+          </select>
+        </div>
       </div>
 
       <div className="card overflow-hidden">

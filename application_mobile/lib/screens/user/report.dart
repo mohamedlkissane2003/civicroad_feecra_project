@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../app_colors.dart';
 import '../../services/civicroad_api.dart';
+import '../../services/civicroad_local_state.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
@@ -28,12 +29,14 @@ class ReportFormSection extends StatefulWidget {
     this.scrollable = true,
     this.afterPhotoWidget,
     this.selectedMapLocation,
+    this.onUseGpsRequested,
   });
 
   final bool showHeader;
   final bool scrollable;
   final Widget? afterPhotoWidget;
   final LatLng? selectedMapLocation;
+  final VoidCallback? onUseGpsRequested;
 
   @override
   State<ReportFormSection> createState() => _ReportFormSectionState();
@@ -72,6 +75,14 @@ class _ReportFormSectionState extends State<ReportFormSection> {
     _titleController.addListener(_suggestCategory);
     _descController.addListener(_suggestCategory);
     _bootstrapLocation();
+  }
+
+  @override
+  void didUpdateWidget(covariant ReportFormSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedMapLocation != oldWidget.selectedMapLocation && widget.selectedMapLocation != null) {
+      _currentLocation = widget.selectedMapLocation;
+    }
   }
 
   @override
@@ -203,6 +214,14 @@ class _ReportFormSectionState extends State<ReportFormSection> {
       );
 
       if (!mounted) return;
+      await CivicRoadLocalState.rememberSubmittedReport({
+        'id': created['id'],
+        'title': created['title'],
+        'status': created['status'],
+        'location_text': created['location_text'],
+        'created_at': created['created_at'],
+        'category': created['category'],
+      });
       setState(() {
         _titleController.clear();
         _descController.clear();
@@ -487,7 +506,15 @@ class _ReportFormSectionState extends State<ReportFormSection> {
               ),
             ),
             TextButton(
-              onPressed: _loadingLocation ? null : _captureCurrentLocation,
+              onPressed: _loadingLocation
+                  ? null
+                  : () {
+                      if (widget.onUseGpsRequested != null) {
+                        widget.onUseGpsRequested!();
+                        return;
+                      }
+                      _captureCurrentLocation();
+                    },
               child: Text(_loadingLocation ? 'Locating…' : 'Use GPS'),
             ),
           ],
@@ -497,11 +524,18 @@ class _ReportFormSectionState extends State<ReportFormSection> {
   }
 
   Widget _buildSeverityRow() {
+    final severityColors = {
+      'Low': AppColors.success,
+      'Medium': AppColors.warning,
+      'High': AppColors.error,
+    };
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Row(
         children: _severities.map((level) {
           final isSelected = _selectedSeverity == level;
+          final severityColor = severityColors[level] ?? AppColors.primary;
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(right: level == 'High' ? 0 : 10),
@@ -510,14 +544,14 @@ class _ReportFormSectionState extends State<ReportFormSection> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary.withValues(alpha: 0.14) : AppColors.card,
+                    color: isSelected ? severityColor.withValues(alpha: 0.16) : AppColors.card,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: isSelected ? AppColors.primary : AppColors.border, width: isSelected ? 1.4 : 1),
+                    border: Border.all(color: isSelected ? severityColor : AppColors.border, width: isSelected ? 1.4 : 1),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     level,
-                    style: TextStyle(fontSize: 13, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500, color: isSelected ? AppColors.primary : AppColors.textSecondary),
+                    style: TextStyle(fontSize: 13, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500, color: isSelected ? severityColor : AppColors.textSecondary),
                   ),
                 ),
               ),
