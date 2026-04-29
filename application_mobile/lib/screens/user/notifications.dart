@@ -64,30 +64,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'in progress':
-        return AppColors.statusInProgress;
-      case 'resolved':
-        return AppColors.statusResolved;
-      case 'pending':
-      default:
-        return AppColors.statusPending;
-    }
-  }
-
-  IconData _statusIcon(String status) {
-    switch (status) {
-      case 'in progress':
-        return Icons.engineering_outlined;
-      case 'resolved':
-        return Icons.check_circle_outline;
-      case 'pending':
-      default:
-        return Icons.schedule_outlined;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +75,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(child: _buildHeader()),
-              SliverToBoxAdapter(child: _buildSummaryStrip()),
               if (_loading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -118,7 +93,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               else
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildNotificationCard(_notifications[index]),
+                    (context, index) => _buildMessageTile(_notifications[index]),
                     childCount: _notifications.length,
                   ),
                 ),
@@ -139,108 +114,109 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Notifications', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.text)),
+          Text('Messages', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.text)),
           SizedBox(height: 4),
-          Text('Status changes for your submitted reports appear here.', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          Text('Tap any message to open and read full details.', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryStrip() {
-    final inProgressCount = _notifications.where((item) => item['status'] == 'in progress').length;
-    final resolvedCount = _notifications.where((item) => item['status'] == 'resolved').length;
+  Widget _buildMessageTile(Map<String, dynamic> notification) {
+    final preview = notification['message'] as String? ?? 'You have a new status update.';
+    final updatedAt = notification['updated_at']?.toString() ?? '';
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Row(
-        children: [
-          Expanded(child: _summaryCard('Live updates', '${_notifications.length}', AppColors.primary)),
-          const SizedBox(width: 10),
-          Expanded(child: _summaryCard('In progress', '$inProgressCount', AppColors.statusInProgress)),
-          const SizedBox(width: 10),
-          Expanded(child: _summaryCard('Resolved', '$resolvedCount', AppColors.statusResolved)),
-        ],
-      ),
-    );
-  }
-
-  Widget _summaryCard(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.16)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: color)),
-          const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotificationCard(Map<String, dynamic> notification) {
-    final status = notification['status'] as String;
-    final color = _statusColor(status);
-    final location = notification['location_text'] as String?;
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 42,
-            height: 42,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _openMessage(notification),
+          child: Container(
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
             ),
-            child: Icon(_statusIcon(status), color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(notification['title'] as String, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text)),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(status.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
-                    ),
-                  ],
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.message_outlined, color: AppColors.primary, size: 18),
                 ),
-                const SizedBox(height: 4),
-                Text(notification['message'] as String, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                if (location != null && location.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(location, style: const TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                ],
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              notification['title'] as String,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _formatWhen(updatedAt),
+                            style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        preview,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  void _openMessage(Map<String, dynamic> notification) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _NotificationMessageDetail(notification: notification),
+      ),
+    );
+  }
+
+  String _formatWhen(String raw) {
+    if (raw.isEmpty) {
+      return '';
+    }
+    final parsed = DateTime.tryParse(raw);
+    if (parsed == null) {
+      return '';
+    }
+    final local = parsed.toLocal();
+    final now = DateTime.now();
+    final sameDay = local.year == now.year && local.month == now.month && local.day == now.day;
+    if (sameDay) {
+      final h = local.hour.toString().padLeft(2, '0');
+      final m = local.minute.toString().padLeft(2, '0');
+      return '$h:$m';
+    }
+    return '${local.day}/${local.month}';
   }
 
   Widget _buildEmptyState() {
@@ -252,9 +228,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             Icon(Icons.notifications_none_outlined, size: 48, color: AppColors.textTertiary),
             SizedBox(height: 10),
-            Text('No notifications yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+            Text('No messages yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
             SizedBox(height: 4),
-            Text('You will see updates when the city changes your report status.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: AppColors.textTertiary)),
+            Text('You will see messages when the city changes your report status.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: AppColors.textTertiary)),
           ],
         ),
       ),
@@ -278,6 +254,74 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _NotificationMessageDetail extends StatelessWidget {
+  const _NotificationMessageDetail({required this.notification});
+
+  final Map<String, dynamic> notification;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = notification['title']?.toString() ?? 'Message';
+    final message = notification['message']?.toString() ?? '';
+    final location = notification['location_text']?.toString() ?? '';
+    final updatedAt = notification['updated_at']?.toString() ?? '';
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: const Text('Message', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+        iconTheme: const IconThemeData(color: AppColors.text),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.text)),
+              const SizedBox(height: 10),
+              Text(message, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.45)),
+              const SizedBox(height: 14),
+              if (location.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                _detailRow('Location', location),
+              ],
+              if (updatedAt.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _detailRow('Updated', updatedAt),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 70,
+          child: Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+        ),
+        Expanded(
+          child: Text(value, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        ),
+      ],
     );
   }
 }

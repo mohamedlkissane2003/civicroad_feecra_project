@@ -15,10 +15,14 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   bool _showPassword = false;
 
   @override
   void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -108,6 +112,42 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel('First name'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _firstNameController,
+                              hint: 'First name',
+                              keyboardType: TextInputType.name,
+                              validator: _validateName,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel('Last name'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _lastNameController,
+                              hint: 'Last name',
+                              keyboardType: TextInputType.name,
+                              validator: _validateName,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   _buildLabel('Email'),
                   const SizedBox(height: 6),
                   _buildTextField(
@@ -344,6 +384,17 @@ class _SignupScreenState extends State<SignupScreen> {
     }
     if (input.length < 6) {
       return 'Password must be at least 6 characters';
+    }
+    return null;
+  }
+
+  String? _validateName(String? value) {
+    final input = value?.trim() ?? '';
+    if (input.isEmpty) {
+      return 'This field is required';
+    }
+    if (input.length < 2) {
+      return 'Enter a valid name';
     }
     return null;
   }

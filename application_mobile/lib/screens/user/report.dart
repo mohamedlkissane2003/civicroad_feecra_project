@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -152,7 +150,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
         throw Exception('Location permission permanently denied');
       }
 
-      final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final position = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       if (!mounted) return;
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
@@ -222,6 +220,7 @@ class _ReportFormSectionState extends State<ReportFormSection> {
         'created_at': created['created_at'],
         'category': created['category'],
       });
+      if (!mounted) return;
       setState(() {
         _titleController.clear();
         _descController.clear();
@@ -231,7 +230,6 @@ class _ReportFormSectionState extends State<ReportFormSection> {
         _selectedImageBytes = null;
         _selectedImageName = null;
       });
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Report sent to CivicRoad dashboard.')),
       );

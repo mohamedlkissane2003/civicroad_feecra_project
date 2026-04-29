@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final position = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       final location = LatLng(position.latitude, position.longitude);
 
       setState(() {

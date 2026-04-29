@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;

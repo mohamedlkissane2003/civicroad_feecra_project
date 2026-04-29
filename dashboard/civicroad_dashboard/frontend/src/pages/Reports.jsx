@@ -4,7 +4,15 @@ import { Download, Trash2 } from "lucide-react";
 import { api } from "../api.js";
 import StatusBadge from "../components/StatusBadge.jsx";
 
-const CATEGORIES = ["all", "road", "lighting", "sanitation", "other"];
+const CATEGORIES = [
+  { value: "all", label: "All categories" },
+  { value: "pothole", label: "pothole" },
+  { value: "streetlight", label: "Streetlight out" },
+  { value: "garbage", label: "Garbage" },
+  { value: "sidewalk", label: "Broken Sidewalk" },
+  { value: "graffiti", label: "Graffiti" },
+  { value: "flooding", label: "Flooding" },
+];
 const STATUSES = ["all", "pending", "in_progress", "resolved"];
 
 export default function Reports() {
@@ -79,7 +87,9 @@ export default function Reports() {
             onChange={(e) => setFilters({ ...filters, category: e.target.value })}
             className="px-3 py-2 rounded-lg border border-slate-200 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
           >
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
           </select>
         </div>
         <div className="flex flex-col gap-1 min-w-[180px]">
